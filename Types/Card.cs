@@ -17,7 +17,7 @@ namespace UNO.Types
             Color = (Color)colors.GetValue(rnd.Next(colors.Length - 1)); // Minus 1 because we don't want to randomly assign the "None" color
 
             // Assign a random number
-            Number = rnd.Next(0, 15).ToString();
+            Number = rnd.Next(0, 16).ToString();
 
             // Numbers 10-14 are assigned for Special cards
             switch (Number)
@@ -43,7 +43,10 @@ namespace UNO.Types
                     Color = Color.None;
                     AssignSpecial(Special.WildPlusFour);
                     break;
-
+                case "15":
+                    Color = Color.None;
+                    AssignSpecial(Special.SwapHands);
+                    break;
                 default:
                     break;
             }
@@ -130,6 +133,9 @@ namespace UNO.Types
 
                 case Special.Skip:
                     return "🚫";
+                case Special.SwapHands:
+                    return "🤝";
+
             }
 
             return "";

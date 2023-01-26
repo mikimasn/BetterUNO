@@ -59,7 +59,7 @@ namespace UNO.Types
         /// <summary>
         /// Maximum number of players
         /// </summary>
-        public int MaxPlayers = 12;
+        public int MaxPlayers = 4;
 
         /// <summary>
         /// How many cards does the next person have to pick up?
@@ -71,6 +71,7 @@ namespace UNO.Types
         private bool isReversed { get; set; }
 
         private int turnNumber { get; set; }
+        public string swapset { get; set; }
 
         public Game() { }
 
@@ -260,7 +261,23 @@ namespace UNO.Types
             else if (CurrentCard.Special == Special.WildPlusFour)
                 StackToPickUp += 4;
 
-            // Check if this player has to pick up cards
+            if (CurrentCard.Special == Special.SwapHands)
+            {
+                
+                var currentP = Players[CurrentPlayerIndex];
+                var secoundP = Players.Find(new Predicate<Player>(p => p.User.Id == Convert.ToUInt64(swapset)));
+                var secoundPlayerCards = secoundP.Deck;
+                var currentPlayerCards = currentP.Deck;
+
+                secoundP.Deck = currentPlayerCards;
+                currentP.Deck = secoundPlayerCards;
+
+                await UpdateInfoMessage($"{previousPlayer.User.Username} swapped hands with {currentP.User.Username}! 😂🤡");
+                await secoundP.UpdateCardMenu(null,$"You swaped cards with {currentP.User.Username}! 😂🤡");
+                await currentP.UpdateCardMenu(null,$"You swaped cards with {secoundP.User.Username}! 😂🤡");
+            }
+
+                // Check if this player has to pick up cards
             if (StackToPickUp > 0 && (lastCard.Special == Special.WildPlusTwo || lastCard.Special == Special.WildPlusFour) && CurrentCard.Special != Special.WildPlusTwo && CurrentCard.Special != Special.WildPlusFour || !playedCard)
             {
                 await UpdateInfoMessage($"{previousPlayer.User.Username} had to pick up {StackToPickUp} cards 😂🤡");

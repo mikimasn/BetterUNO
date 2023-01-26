@@ -63,6 +63,8 @@ namespace UNO
         [ComponentInteraction("wild-*-*-*")]
         public async Task TryToPlayWildCard(string color, string special, string index) => await GameManager.TryToPlayWildCard((SocketMessageComponent)Context.Interaction, color, special, Convert.ToInt32(index));
 
+        [ComponentInteraction("swap-*-*")]
+        public async Task TryToPlaySwapCard(string user, string index) => await GameManager.TryToPlaySwapCard((SocketMessageComponent)Context.Interaction,user,Convert.ToInt32(index));
         // "UNO!" button
         [ComponentInteraction("sayuno")]
         public async Task TryToSayUno() => await GameManager.TryToSayUno((SocketMessageComponent)Context.Interaction);

@@ -1,3 +1,4 @@
+using System.Data;
 using Discord;
 using Discord.WebSocket;
 
@@ -34,6 +35,7 @@ namespace UNO.Types
         /// Can anyone say UNO! for this player?
         /// </summary>
         public bool CanSomeoneSayUno { get; set; }
+        public DateTime LastCardPlaced { get; set; }
 
         public Player(SocketUser user, Random rnd, Game game)
         {
@@ -249,7 +251,7 @@ namespace UNO.Types
             // Cards of the same color can be played
                 inputCard.Color == Game.CurrentCard.Color ||
                 // Wild Cards
-                (inputCard.Special == Special.Wild || inputCard.Special == Special.WildPlusFour) ||
+                (inputCard.Special == Special.Wild || inputCard.Special == Special.WildPlusFour || inputCard.Special == Special.SwapHands) ||
                 // Special cards of the same type
                 inputCard.Special == Game.CurrentCard.Special && inputCard.Special != Special.None ||
                 // Cards of the same number can be played
@@ -264,6 +266,7 @@ namespace UNO.Types
         /// </summary>
         public async Task PlayCard(SocketMessageComponent command, Card inputCard, int index)
         {
+            LastCardPlaced= DateTime.Now;
             // Remove the card from the player's deck
             Deck.RemoveAt(index);
 
@@ -297,6 +300,27 @@ namespace UNO.Types
                     .WithButton("Yellow", $"wild-Yellow-{special}-{index}", style: ButtonStyle.Secondary, new Emoji("🟨"))
                     .WithButton("Cancel", "cancelwild", style: ButtonStyle.Secondary)
                     .Build();
+            });
+        }
+        public async Task ShowSwapMenu(SocketMessageComponent command, int index)
+        {
+            await command.UpdateAsync(m =>
+            {
+                m.Embed = new EmbedBuilder()
+                    .WithColor(Colors.Green)
+                    .WithDescription("Select a user to swap with")
+                    .Build();
+
+                var component = new ComponentBuilder();
+                foreach (var player in Game.Players)
+                {
+                    if (player.User.Id != User.Id)
+                    {
+                        component.WithButton(player.User.Username, $"swap-{player.User.Id}-{index}", style: ButtonStyle.Secondary);
+                    }
+                }
+                component.WithButton("Cancel", "cancelswap", style: ButtonStyle.Secondary);
+                m.Components = component.Build();
             });
         }
 

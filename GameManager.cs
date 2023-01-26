@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using UNO.Types;
 
 namespace UNO
 {
@@ -335,6 +336,11 @@ namespace UNO
                 return;
             }
 
+            if (inputCard.Special == Special.SwapHands)
+            {
+                await retrievedGame.Player.ShowSwapMenu(command, index);
+            }
+
             // Play the card
             await retrievedGame.Player.PlayCard(command, inputCard, index);
         }
@@ -387,7 +393,20 @@ namespace UNO
             // Play the card
             await retrievedGame.Player.PlayCard(command, inputCard, Convert.ToInt32(args[3]));
         }
+        public async Task TryToPlaySwapCard(SocketMessageComponent command, string uid, int index)
+        {
+            // Try to find a valid game in this channel with this suer
+            var retrievedGame = await command.TryToFindGameInThisChannelWithUser(ActiveGames);
 
+            if (!retrievedGame.hasValidGameAndPlayer)
+                return;
+
+            // Check if it's this player's turn
+            if (!await retrievedGame.Player.CheckIfItsMyTurn(command))
+                return;
+            retrievedGame.Game.swapset = uid;
+            await retrievedGame.Player.ShowWildMenu(command, Special.SwapHands, index);
+        }
         /// <summary>
         /// Try to show a wild card menu
         /// </summary>

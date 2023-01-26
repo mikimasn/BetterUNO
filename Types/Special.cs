@@ -7,6 +7,7 @@ namespace UNO.Types
         Skip,
         Wild,
         WildPlusTwo,
-        WildPlusFour
+        WildPlusFour,
+        SwapHands
     }
 }

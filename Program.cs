@@ -71,7 +71,7 @@ namespace UNO
             var totalGuilds = _client.Shards.Sum(x => x.Guilds.Count);
 
             // Update Bot Status
-            await _client.SetGameAsync($"/uno on {totalGuilds} servers");
+            await _client.SetGameAsync($"Uno fixed by pythontest");
 
             // Update Top.gg Server Count
             if (Config.USE_TOP_GG_API && !Config.IS_DEBUG)
@@ -95,6 +95,8 @@ namespace UNO
                 await _commands
                     .RegisterCommandsToGuildAsync(Config.DEBUG_GUILD_ID);
             }
+
+            await UpdateBotStatus();
         }
 
         private async Task OnInteractionCreated(SocketInteraction interaction)
@@ -108,7 +110,7 @@ namespace UNO
             }
             catch (Exception e)
             {
-                Console.WriteLine (e);
+                Console.WriteLine(e);
             }
         }
 
